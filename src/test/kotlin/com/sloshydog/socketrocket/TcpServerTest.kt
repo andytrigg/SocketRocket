@@ -57,4 +57,34 @@ class TcpServerTest {
 
         socket.close()
     }
+
+    @Test
+    fun `test multiple clients can connect and receive responses`() {
+        val clients = mutableListOf<Thread>()
+
+        repeat(5) {
+            clients.add(Thread {
+                val socket = Socket("127.0.0.1", serverPort)
+                val output = PrintWriter(socket.getOutputStream(), true)
+                val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+
+                output.println("Client-$it")
+                val response = input.readLine()
+
+                assertEquals("Echo: Client-$it", response)
+
+                socket.close()
+            })
+        }
+
+        clients.forEach { it.start() }
+        clients.forEach { it.join() }
+    }
+
+    @Test
+    fun `test invalid port connection fails`() {
+        Assertions.assertThrows(Exception::class.java) {
+            Socket("127.0.0.1", 9999) // Wrong port
+        }
+    }
 }

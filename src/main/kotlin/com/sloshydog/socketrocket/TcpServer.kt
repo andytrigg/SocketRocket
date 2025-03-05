@@ -8,7 +8,8 @@ import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.Socket
-
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.logging.Logger
 
 /**
  * Copyright (c) 2014. gigantiqandy@gmail.com
@@ -26,24 +27,32 @@ import java.net.Socket
  * limitations under the License.
  */
 class TcpServer(private val port: Int) {
-    private var running = true
+    private val logger = Logger.getLogger(TcpServer::class.java.name)
+    private val running = AtomicBoolean(true)
     private lateinit var serverSocket: ServerSocket
 
     fun start() {
         serverSocket = ServerSocket(port)
-        println("Server started on port $port")
+        logger.info("🚀 Server started on port $port")
 
         runBlocking {
-            while (running) {
-                val clientSocket = serverSocket.accept()
-                launch(Dispatchers.IO) { handleClient(clientSocket) }
+            try {
+                while (running.get()) {
+                    val clientSocket = serverSocket.accept()
+                    launch(Dispatchers.IO) { handleClient(clientSocket) }
+                }
+            } catch (e: Exception) {
+                if (running.get()) {
+                    logger.severe("❌ Server error: ${e.message}")
+                }
             }
         }
     }
 
     fun stop() {
-        running = false
+        running.set(false)
         serverSocket.close()
+        logger.info("🛑 Server stopped gracefully")
     }
 
     private fun handleClient(clientSocket: Socket) {
@@ -51,10 +60,18 @@ class TcpServer(private val port: Int) {
             val input = BufferedReader(InputStreamReader(socket.getInputStream()))
             val output = PrintWriter(socket.getOutputStream(), true)
 
-            while (true) {
-                val message = input.readLine() ?: break
-                println("Received: $message")
-                output.println("Echo: $message")
+            logger.info("👤 New client connected: ${socket.inetAddress}")
+
+            try {
+                while (true) {
+                    val message = input.readLine() ?: break
+                    logger.info("📩 Received: $message")
+                    output.println("Echo: $message")
+                }
+            } catch (e: Exception) {
+                logger.warning("⚠️ Error with client ${socket.inetAddress}: ${e.message}")
+            } finally {
+                logger.info("❌ Client ${socket.inetAddress} disconnected")
             }
         }
     }
