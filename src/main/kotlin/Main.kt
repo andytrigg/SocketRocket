@@ -16,35 +16,17 @@ package com.sloshydog
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java.net.ServerSocket
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
-import java.io.PrintWriter
+import com.sloshydog.socketrocket.TcpServer
 
 fun main() {
-    val serverPort = 12345
-    val serverSocket = ServerSocket(serverPort)  // Open a server socket on the specified port
 
-    println("Server started, waiting for client to connect...")
+    val port = 7878  // Define the port number
+    val server = TcpServer(port)
 
-    while (true) {
-        val clientSocket = serverSocket.accept()  // Accept an incoming client connection
-        println("Client connected from: ${clientSocket.inetAddress.hostAddress}")
+    Runtime.getRuntime().addShutdownHook(Thread {
+        println("Shutting down server...")
+        server.stop()
+    })
 
-        // Create input and output streams to communicate with the client
-        val inputStream = BufferedReader(InputStreamReader(clientSocket.getInputStream()))
-        val outputStream = PrintWriter(OutputStreamWriter(clientSocket.getOutputStream()), true)
-
-        // Send a welcome message to the client
-        outputStream.println("Hello, Client!")
-
-        // Read a message from the client (just for demonstration)
-        val clientMessage = inputStream.readLine()
-        println("Received from client: $clientMessage")
-
-        // Close the client connection after communication is done
-        clientSocket.close()
-        println("Client connection closed.\n")
-    }
+    server.start()
 }
