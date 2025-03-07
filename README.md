@@ -228,11 +228,11 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [contributors-shield]: https://img.shields.io/github/contributors/andytrigg/SocketRocket.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
+[contributors-url]: https://github.com/andytrigg/SocketRocket/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/andytrigg/SocketRocket.svg?style=for-the-badge
+[forks-url]: https://github.com/andytrigg/SocketRocket/network/members
+[stars-shield]: https://img.shields.io/github/stars/andytrigg/SocketRocket.svg?style=for-the-badge
+[stars-url]: https://github.com/andytrigg/SocketRocket/stargazers
 [issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
 [issues-url]: https://github.com/github_username/repo_name/issues
 [license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
