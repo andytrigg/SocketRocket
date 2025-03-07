@@ -94,6 +94,7 @@ Here's a blank template to get started. To avoid retyping too much info, do a se
 ### Built With
 
 * [![Kotlin][Kotlin]][Kotlin-url]
+* [![Gradle][Gradle]][Gradle-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -220,4 +221,6 @@ Project Link: [https://github.com/andytrigg/SocketRocket](https://github.com/and
 [linkedin-url]: https://linkedin.com/in/andytrigg
 [product-screenshot]: images/screenshot.png
 [Kotlin]: https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=white
-[Kotlin-url]: https://https://kotlinlang.org/
+[Kotlin-url]: https://kotlinlang.org/
+[Gradle]: https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=Gradle&logoColor=white
+[Gradle-url]: https://gradle.org/
