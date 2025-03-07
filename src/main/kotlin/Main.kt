@@ -1,5 +1,6 @@
 package com.sloshydog
 
+import kotlinx.cli.*
 
 /**
  * Copyright (c) 2025. andy@sloshydog.com
@@ -18,9 +19,11 @@ package com.sloshydog
  */
 import com.sloshydog.socketrocket.TcpServer
 
-fun main() {
+fun main(args: Array<String>) {
+    val parser = ArgParser("example")
+    val port by parser.option(ArgType.Int, shortName = "p", description = "Port Number", fullName = "port").default(7878)
+    parser.parse(args)
 
-    val port = 7878  // Define the port number
     val server = TcpServer(port)
 
     Runtime.getRuntime().addShutdownHook(Thread {
