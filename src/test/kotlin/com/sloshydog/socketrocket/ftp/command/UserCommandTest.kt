@@ -25,17 +25,13 @@ import java.net.Socket
  * limitations under the License.
  */
 class UserCommandTest {
-    private lateinit var identityManager: IdentityManager
-    private lateinit var sessionManager: SessionManager
     private lateinit var command: UserCommand
     private lateinit var mockSocket: Socket
     private lateinit var outputStream: ByteArrayOutputStream
 
     @BeforeEach
     fun setUp() {
-        identityManager = mockk()
-        sessionManager = mockk()
-        command = UserCommand(identityManager)
+        command = UserCommand()
         mockSocket = mockk()
         outputStream = ByteArrayOutputStream()
 
@@ -51,9 +47,8 @@ class UserCommandTest {
     }
 
     @Test
-    fun `should accept valid username and set session`() {
+    fun `should accept username and set session`() {
         val username = "validUser"
-        every { identityManager.isValidUser(username) } returns true
         mockkObject(SessionManager)
         every { SessionManager.setUser(mockSocket, username) } just Runs
 
@@ -63,18 +58,5 @@ class UserCommandTest {
         assertEquals("331 User $username OK, need password", response)
 
         verify { SessionManager.setUser(mockSocket, username) }
-    }
-
-    @Test
-    fun `should reject invalid username`() {
-        val username = "invalidUser"
-        every { identityManager.isValidUser(username) } returns false
-
-        command.handle(mockSocket, listOf(username))
-
-        val response = outputStream.toString().trim()
-        assertEquals("530 Invalid username", response)
-
-        verify(exactly = 0) { sessionManager.setUser(any(), any()) }
     }
 }

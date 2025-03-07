@@ -31,7 +31,7 @@ import java.net.Socket
  *  the USER command and then reject the combination of username
  *  and password for an invalid username when PASS is provided later.
  */
-class UserCommand(private val identityManager: IdentityManager) : FtpCommand {
+class UserCommand: FtpCommand {
 
     override fun handle(client: Socket, args: List<String>) {
         if (args.isEmpty()) {
@@ -39,13 +39,9 @@ class UserCommand(private val identityManager: IdentityManager) : FtpCommand {
             return
         }
         val username = args[0]
-        if (identityManager.isValidUser(username)) {
-            SessionManager.setUser(client, username)
-            client.getOutputStream()
-                .write("${FtpHandler.USER_NAME_OKAY_NEED_PASSWORD} User $username OK, need password\r\n".toByteArray())
-        } else {
-            client.getOutputStream().write("${FtpHandler.NOT_LOGGED_IN} Invalid username\r\n".toByteArray())
-        }
+        SessionManager.setUser(client, username)
+        client.getOutputStream()
+            .write("${FtpHandler.USER_NAME_OKAY_NEED_PASSWORD} User $username OK, need password\r\n".toByteArray())
     }
 }
 

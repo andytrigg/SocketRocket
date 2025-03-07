@@ -24,7 +24,7 @@ class FtpHandler(val identityManager: IdentityManager) : TcpHandler {
     }
 
     override fun init() {
-        FtpCommandRegistry.register("USER", UserCommand(identityManager = identityManager))
+        FtpCommandRegistry.register("USER", UserCommand())
         FtpCommandRegistry.register("PASS", PassCommand())
     }
 
