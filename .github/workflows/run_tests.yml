@@ -36,8 +36,9 @@ jobs:
         run: ./gradlew test
 
       - name: Upload test results (Optional)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: test-results
           path: build/reports/tests/test/
+          compression-level: 0  # Use 0 for faster uploads
