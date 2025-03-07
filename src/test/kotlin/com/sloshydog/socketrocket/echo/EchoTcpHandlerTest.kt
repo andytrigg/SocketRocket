@@ -1,13 +1,13 @@
 package com.sloshydog.socketrocket.echo
 
-import com.sloshydog.com.sloshydog.socketrocket.echo.EchoTcpHandler
+import com.sloshydog.socketrocket.echo.EchoTcpHandler
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.io.BufferedReader
-import java.io.PrintWriter
-import java.io.StringReader
-import java.io.StringWriter
+import java.io.*
+import java.net.Socket
 
 /**
  * Copyright (c) 2025. andy@sloshydog.com
@@ -25,12 +25,23 @@ import java.io.StringWriter
  * limitations under the License.
  */
 class EchoTcpHandlerTest {
-
   private lateinit var handler: EchoTcpHandler
+  private lateinit var mockSocket: Socket
+  private lateinit var inputStream: ByteArrayInputStream
+  private lateinit var outputStream: ByteArrayOutputStream
 
   @BeforeEach
   fun setup() {
     handler = EchoTcpHandler()
+    mockSocket = mockk(relaxed = true)
+
+    // Simulated input and output streams
+    inputStream = ByteArrayInputStream("Hello, Server!\n".toByteArray())
+    outputStream = ByteArrayOutputStream()
+
+    // Mock socket behavior
+    every { mockSocket.getInputStream() } returns inputStream
+    every { mockSocket.getOutputStream() } returns outputStream
   }
 
   @Test
@@ -40,15 +51,9 @@ class EchoTcpHandlerTest {
 
   @Test
   fun `should echo received message`() {
-    // Mock input and output streams
-    val input = BufferedReader(StringReader("Hello, Server!"))
-    val outputStream = StringWriter()
-    val output = PrintWriter(outputStream, true)
+    handler.handle(mockSocket)
 
-    handler.handle(input, output)
-
-    // Verify the echoed message
-    val result = outputStream.toString().trim()
-    assertEquals("Echo: Hello, Server!", result)
+    val response = outputStream.toString().trim()
+    assertEquals("Echo: Hello, Server!", response)
   }
 }

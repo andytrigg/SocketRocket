@@ -1,9 +1,9 @@
 package com.sloshydog.socketrocket
 
-import java.io.BufferedReader
-import java.io.PrintWriter
+import java.net.Socket
 
 interface TcpHandler {
     fun name(): String
-    fun handle(input: BufferedReader, output: PrintWriter)
+    fun init()
+    fun handle(clientSocket: Socket)
 }

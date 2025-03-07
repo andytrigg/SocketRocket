@@ -1,4 +1,4 @@
-package com.sloshydog.com.sloshydog.socketrocket.ftp
+package com.sloshydog.socketrocket.ftp.command
 
 /**
  * Copyright (c) 2025. andy@sloshydog.com

@@ -1,7 +1,5 @@
-package com.sloshydog.socketrocket.ftp
+package com.sloshydog.socketrocket.ftp.command
 
-import com.sloshydog.com.sloshydog.socketrocket.ftp.FtpCommand
-import com.sloshydog.com.sloshydog.socketrocket.ftp.FtpCommandRegistry
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach

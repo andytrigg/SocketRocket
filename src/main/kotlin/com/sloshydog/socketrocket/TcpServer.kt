@@ -1,6 +1,6 @@
 package com.sloshydog.socketrocket
 
-import com.sloshydog.com.sloshydog.socketrocket.echo.EchoTcpHandler
+import com.sloshydog.socketrocket.echo.EchoTcpHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -66,7 +66,7 @@ class TcpServer(private val port: Int) {
 
             try {
                 while (true) {
-                    handler.handle(input, output);
+                    handler.handle(socket);
                 }
             } catch (e: Exception) {
                 logger.warning("⚠️ Error with client ${socket.inetAddress}: ${e.message}")

@@ -1,14 +1,14 @@
 package com.sloshydog.socketrocket.ftp
 
-import com.sloshydog.com.sloshydog.socketrocket.echo.EchoTcpHandler
-import com.sloshydog.com.sloshydog.socketrocket.ftp.FtpHandler
+import com.sloshydog.socketrocket.ftp.command.UserCommand
+import com.sloshydog.socketrocket.ftp.command.FtpCommand
+import com.sloshydog.socketrocket.ftp.command.FtpCommandRegistry
+import io.mockk.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.io.BufferedReader
-import java.io.PrintWriter
-import java.io.StringReader
-import java.io.StringWriter
+import java.io.*
+import java.net.Socket
 
 /**
  * Copyright (c) 2025. andy@sloshydog.com
@@ -28,10 +28,19 @@ import java.io.StringWriter
 class FtpHandlerTest {
 
     private lateinit var handler: FtpHandler
+    private lateinit var mockSocket: Socket
+    private lateinit var inputStream: ByteArrayInputStream
+    private lateinit var outputStream: ByteArrayOutputStream
+    private lateinit var mockCommandHandler: FtpCommand
 
     @BeforeEach
     fun setup() {
         handler = FtpHandler()
+        mockSocket = mockk(relaxed = true)
+        mockCommandHandler = mockk(relaxed = true)
+
+        // Simulate input and output streams
+        outputStream = ByteArrayOutputStream()
     }
 
     @Test
@@ -40,16 +49,54 @@ class FtpHandlerTest {
     }
 
     @Test
-    fun `should echo received message`() {
-        // Mock input and output streams
-        val input = BufferedReader(StringReader("Hello, Server!"))
-        val outputStream = StringWriter()
-        val output = PrintWriter(outputStream, true)
+    fun `should execute known FTP command`() {
+        inputStream = ByteArrayInputStream("USER test_user\r\n".toByteArray())
 
-        handler.handle(input, output)
+        every { mockSocket.getInputStream() } returns inputStream
+        every { mockSocket.getOutputStream() } returns outputStream
 
-        // Verify the echoed message
-        val result = outputStream.toString().trim()
-        assertEquals("Echo: Hello, Server!", result)
+        // Mock command registry behavior
+        mockkObject(FtpCommandRegistry)
+        every { FtpCommandRegistry.getCommand("USER") } returns mockCommandHandler
+
+        handler.handle(mockSocket)
+
+        // Verify that the command handler was executed
+        verify { mockCommandHandler.handle(mockSocket, listOf("test_user")) }
+
+        unmockkObject(FtpCommandRegistry)
+    }
+
+    @Test
+    fun `should return error for unknown FTP command`() {
+        inputStream = ByteArrayInputStream("UNKNOWN test\r\n".toByteArray())
+
+        every { mockSocket.getInputStream() } returns inputStream
+        every { mockSocket.getOutputStream() } returns outputStream
+
+        // Mock command registry returning null
+        mockkObject(FtpCommandRegistry)
+        every { FtpCommandRegistry.getCommand("UNKNOWN") } returns null
+
+        handler.handle(mockSocket)
+
+        unmockkObject(FtpCommandRegistry)
+
+        val response = outputStream.toString().trim()
+        assertEquals("502 Command not implemented", response)
+    }
+
+    @Test
+    fun `should register USER command on init`() {
+        mockkObject(FtpCommandRegistry) // Mock the singleton object
+
+        // Ensure the register method is called with expected arguments
+        every { FtpCommandRegistry.register("USER", any<UserCommand>()) } just Runs
+
+        handler.init()
+
+        verify(exactly = 1) { FtpCommandRegistry.register("USER", any<UserCommand>()) }
+
+        unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
     }
 }
