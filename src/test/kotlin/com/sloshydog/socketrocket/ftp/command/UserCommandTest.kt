@@ -1,7 +1,6 @@
 package com.sloshydog.socketrocket.ftp.command
 
-import com.sloshydog.com.sloshydog.socketrocket.ftp.SessionManager
-import com.sloshydog.socketrocket.ftp.IdentityManager
+import com.sloshydog.socketrocket.ftp.SessionManager
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

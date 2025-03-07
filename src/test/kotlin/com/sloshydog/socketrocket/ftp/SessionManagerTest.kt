@@ -1,6 +1,5 @@
 package com.sloshydog.socketrocket.ftp
 
-import com.sloshydog.com.sloshydog.socketrocket.ftp.SessionManager
 import io.mockk.mockk
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*

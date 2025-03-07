@@ -1,4 +1,4 @@
-package com.sloshydog.com.sloshydog.socketrocket.ftp
+package com.sloshydog.socketrocket.ftp
 
 import java.net.Socket
 import java.util.concurrent.ConcurrentHashMap

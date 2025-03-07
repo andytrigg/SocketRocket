@@ -14,7 +14,6 @@ class EchoTcpHandler : TcpHandler {
     }
 
     override fun init() {
-        TODO("Not yet implemented")
     }
 
     override fun handle(clientSocket: Socket) {
