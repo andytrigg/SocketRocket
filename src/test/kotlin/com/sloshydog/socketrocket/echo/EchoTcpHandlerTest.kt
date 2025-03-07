@@ -1,12 +1,12 @@
 package com.sloshydog.socketrocket.echo
 
-import com.sloshydog.socketrocket.echo.EchoTcpHandler
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.net.Socket
 
 /**

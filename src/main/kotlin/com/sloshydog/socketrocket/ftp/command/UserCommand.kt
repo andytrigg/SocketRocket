@@ -1,6 +1,8 @@
 package com.sloshydog.socketrocket.ftp.command
 
+import com.sloshydog.com.sloshydog.socketrocket.ftp.SessionManager
 import com.sloshydog.socketrocket.ftp.FtpHandler
+import com.sloshydog.socketrocket.ftp.IdentityManager
 import java.net.Socket
 
 
@@ -29,14 +31,21 @@ import java.net.Socket
  *  the USER command and then reject the combination of username
  *  and password for an invalid username when PASS is provided later.
  */
-class UserCommand : FtpCommand {
+class UserCommand(private val identityManager: IdentityManager) : FtpCommand {
+
     override fun handle(client: Socket, args: List<String>) {
         if (args.isEmpty()) {
             client.getOutputStream().write("${FtpHandler.SYNTAX_ERROR} Syntax error in parameters\r\n".toByteArray())
             return
         }
-        client.getOutputStream()
-            .write("${FtpHandler.USER_NAME_OKAY_NEED_PASSWORD} User ${args[0]} OK, need password\r\n".toByteArray())
+        val username = args[0]
+        if (identityManager.isValidUser(username)) {
+            SessionManager.setUser(client, username)
+            client.getOutputStream()
+                .write("${FtpHandler.USER_NAME_OKAY_NEED_PASSWORD} User $username OK, need password\r\n".toByteArray())
+        } else {
+            client.getOutputStream().write("${FtpHandler.NOT_LOGGED_IN} Invalid username\r\n".toByteArray())
+        }
     }
 }
 

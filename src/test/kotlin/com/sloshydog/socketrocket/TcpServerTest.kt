@@ -1,11 +1,13 @@
 package com.sloshydog.socketrocket
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.junit.jupiter.api.*
-import java.net.Socket
-import java.io.PrintWriter
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import kotlinx.coroutines.*
+import java.io.PrintWriter
+import java.net.Socket
 import kotlin.test.assertEquals
 
 

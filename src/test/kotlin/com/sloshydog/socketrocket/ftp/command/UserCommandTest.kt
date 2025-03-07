@@ -1,8 +1,9 @@
 package com.sloshydog.socketrocket.ftp.command
 
-import io.mockk.every
-import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.*
+import com.sloshydog.com.sloshydog.socketrocket.ftp.SessionManager
+import com.sloshydog.socketrocket.ftp.IdentityManager
+import io.mockk.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
@@ -24,36 +25,56 @@ import java.net.Socket
  * limitations under the License.
  */
 class UserCommandTest {
+    private lateinit var identityManager: IdentityManager
+    private lateinit var sessionManager: SessionManager
     private lateinit var command: UserCommand
     private lateinit var mockSocket: Socket
     private lateinit var outputStream: ByteArrayOutputStream
 
     @BeforeEach
-    fun setup() {
-        command = UserCommand()
-        mockSocket = mockk(relaxed = true)
+    fun setUp() {
+        identityManager = mockk()
+        sessionManager = mockk()
+        command = UserCommand(identityManager)
+        mockSocket = mockk()
         outputStream = ByteArrayOutputStream()
 
         every { mockSocket.getOutputStream() } returns outputStream
     }
 
     @Test
-    fun `should return syntax error when no arguments are provided`() {
-        // Act
+    fun `should return syntax error when no username is provided`() {
         command.handle(mockSocket, emptyList())
 
-        // Assert
         val response = outputStream.toString().trim()
         assertEquals("501 Syntax error in parameters", response)
     }
 
     @Test
-    fun `should return user okay need password when username is provided`() {
-        // Act
-        command.handle(mockSocket, listOf("testuser"))
+    fun `should accept valid username and set session`() {
+        val username = "validUser"
+        every { identityManager.isValidUser(username) } returns true
+        mockkObject(SessionManager)
+        every { SessionManager.setUser(mockSocket, username) } just Runs
 
-        // Assert
+        command.handle(mockSocket, listOf(username))
+
         val response = outputStream.toString().trim()
-        assertEquals("331 User testuser OK, need password", response)
+        assertEquals("331 User $username OK, need password", response)
+
+        verify { SessionManager.setUser(mockSocket, username) }
+    }
+
+    @Test
+    fun `should reject invalid username`() {
+        val username = "invalidUser"
+        every { identityManager.isValidUser(username) } returns false
+
+        command.handle(mockSocket, listOf(username))
+
+        val response = outputStream.toString().trim()
+        assertEquals("530 Invalid username", response)
+
+        verify(exactly = 0) { sessionManager.setUser(any(), any()) }
     }
 }

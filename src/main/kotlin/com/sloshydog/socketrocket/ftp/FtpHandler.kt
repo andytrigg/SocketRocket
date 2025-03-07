@@ -1,6 +1,6 @@
 package com.sloshydog.socketrocket.ftp
 
-import com.sloshydog.com.sloshydog.socketrocket.ftp.command.PassCommand
+import com.sloshydog.socketrocket.ftp.command.PassCommand
 import com.sloshydog.socketrocket.ftp.command.UserCommand
 import com.sloshydog.socketrocket.TcpHandler
 import com.sloshydog.socketrocket.ftp.command.FtpCommandRegistry
@@ -10,11 +10,12 @@ import java.net.Socket
 import java.util.logging.Logger
 
 // RFC 959
-class FtpHandler : TcpHandler {
+class FtpHandler(val identityManager: IdentityManager) : TcpHandler {
     companion object {
         const val USER_NAME_OKAY_NEED_PASSWORD = 331
         const val SYNTAX_ERROR = 501
         const val COMMAND_NOT_IMPLEMENTED = 502
+        const val NOT_LOGGED_IN = 530
     }
 
     private val logger = Logger.getLogger(FtpHandler::class.java.name)
@@ -23,7 +24,7 @@ class FtpHandler : TcpHandler {
     }
 
     override fun init() {
-        FtpCommandRegistry.register("USER", UserCommand())
+        FtpCommandRegistry.register("USER", UserCommand(identityManager = identityManager))
         FtpCommandRegistry.register("PASS", PassCommand())
     }
 

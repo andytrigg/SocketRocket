@@ -1,7 +1,4 @@
-package com.sloshydog.socketrocket.ftp.command
-
-import java.net.Socket
-
+package com.sloshydog.socketrocket.ftp
 
 /**
  * Copyright (c) 2025. andy@sloshydog.com
@@ -18,8 +15,9 @@ import java.net.Socket
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class PassCommand: FtpCommand {
- override fun handle(client: Socket, args: List<String>) {
-  TODO("Not yet implemented")
- }
+interface IdentityManager {
+    fun isValidUser(username: String): Boolean
+    fun isValidPassword(username: String, password: String): Boolean
 }
+
+

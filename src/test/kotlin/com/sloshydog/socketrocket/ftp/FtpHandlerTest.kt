@@ -1,14 +1,15 @@
 package com.sloshydog.socketrocket.ftp
 
-import com.sloshydog.com.sloshydog.socketrocket.ftp.command.PassCommand
-import com.sloshydog.socketrocket.ftp.command.UserCommand
 import com.sloshydog.socketrocket.ftp.command.FtpCommand
 import com.sloshydog.socketrocket.ftp.command.FtpCommandRegistry
+import com.sloshydog.socketrocket.ftp.command.PassCommand
+import com.sloshydog.socketrocket.ftp.command.UserCommand
 import io.mockk.*
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.net.Socket
 
 /**
@@ -36,7 +37,7 @@ class FtpHandlerTest {
 
     @BeforeEach
     fun setup() {
-        handler = FtpHandler()
+        handler = FtpHandler(mockk(relaxed = true))
         mockSocket = mockk(relaxed = true)
         mockCommandHandler = mockk(relaxed = true)
 
