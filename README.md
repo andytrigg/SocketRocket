@@ -93,7 +93,7 @@ Here's a blank template to get started. To avoid retyping too much info, do a se
 
 ### Built With
 
-* [![Kotlin][Kotlin.org]][Kotlin-url]
+* [![Kotlin][Kotlin]][Kotlin-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -219,5 +219,5 @@ Project Link: [https://github.com/andytrigg/SocketRocket](https://github.com/and
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/andytrigg
 [product-screenshot]: images/screenshot.png
-[Kotlin.org]: https://img.shields.io/badge/kotlin.org-000000?style=for-the-badge&logo=kotlin&logoColor=white
+[Kotlin]: https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=white
 [Kotlin-url]: https://https://kotlinlang.org/
