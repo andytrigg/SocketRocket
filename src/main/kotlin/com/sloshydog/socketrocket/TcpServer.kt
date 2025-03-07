@@ -1,5 +1,6 @@
 package com.sloshydog.socketrocket
 
+import com.sloshydog.com.sloshydog.socketrocket.echo.EchoTcpHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -56,17 +57,16 @@ class TcpServer(private val port: Int) {
     }
 
     private fun handleClient(clientSocket: Socket) {
+        val handler = EchoTcpHandler()
         clientSocket.use { socket ->
             val input = BufferedReader(InputStreamReader(socket.getInputStream()))
             val output = PrintWriter(socket.getOutputStream(), true)
 
-            logger.info("👤 New client connected: ${socket.inetAddress}")
+            logger.info("👤 New client connected to ${handler.name()}: ${socket.inetAddress}")
 
             try {
                 while (true) {
-                    val message = input.readLine() ?: break
-                    logger.info("📩 Received: $message")
-                    output.println("Echo: $message")
+                    handler.handle(input, output);
                 }
             } catch (e: Exception) {
                 logger.warning("⚠️ Error with client ${socket.inetAddress}: ${e.message}")
@@ -76,3 +76,4 @@ class TcpServer(private val port: Int) {
         }
     }
 }
+
