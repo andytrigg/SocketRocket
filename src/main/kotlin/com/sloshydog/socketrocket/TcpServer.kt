@@ -59,9 +59,6 @@ class TcpServer(private val port: Int) {
     private fun handleClient(clientSocket: Socket) {
         val handler = EchoTcpHandler()
         clientSocket.use { socket ->
-            val input = BufferedReader(InputStreamReader(socket.getInputStream()))
-            val output = PrintWriter(socket.getOutputStream(), true)
-
             logger.info("👤 New client connected to ${handler.name()}: ${socket.inetAddress}")
 
             try {
