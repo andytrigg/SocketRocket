@@ -1,5 +1,6 @@
 package com.sloshydog.socketrocket.ftp
 
+import com.sloshydog.com.sloshydog.socketrocket.ftp.command.PassCommand
 import com.sloshydog.socketrocket.ftp.command.UserCommand
 import com.sloshydog.socketrocket.TcpHandler
 import com.sloshydog.socketrocket.ftp.command.FtpCommandRegistry
@@ -23,6 +24,7 @@ class FtpHandler : TcpHandler {
 
     override fun init() {
         FtpCommandRegistry.register("USER", UserCommand())
+        FtpCommandRegistry.register("PASS", PassCommand())
     }
 
     override fun handle(clientSocket: Socket) {

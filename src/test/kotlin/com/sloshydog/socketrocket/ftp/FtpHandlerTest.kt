@@ -1,5 +1,6 @@
 package com.sloshydog.socketrocket.ftp
 
+import com.sloshydog.com.sloshydog.socketrocket.ftp.command.PassCommand
 import com.sloshydog.socketrocket.ftp.command.UserCommand
 import com.sloshydog.socketrocket.ftp.command.FtpCommand
 import com.sloshydog.socketrocket.ftp.command.FtpCommandRegistry
@@ -96,6 +97,20 @@ class FtpHandlerTest {
         handler.init()
 
         verify(exactly = 1) { FtpCommandRegistry.register("USER", any<UserCommand>()) }
+
+        unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
+    }
+
+    @Test
+    fun `should register PASS command on init`() {
+        mockkObject(FtpCommandRegistry) // Mock the singleton object
+
+        // Ensure the register method is called with expected arguments
+        every { FtpCommandRegistry.register("PASS", any<PassCommand>()) } just Runs
+
+        handler.init()
+
+        verify(exactly = 1) { FtpCommandRegistry.register("PASS", any<PassCommand>()) }
 
         unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
     }
