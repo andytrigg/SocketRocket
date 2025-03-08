@@ -32,6 +32,9 @@ class FtpHandler(private val identityManager: IdentityManager) : TcpHandler {
         FtpCommandRegistry.register("TYPE", TypeCommand())
         FtpCommandRegistry.register("MODE", ModeCommand())
         FtpCommandRegistry.register("STRU", StruCommand())
+        FtpCommandRegistry.register("RETR", RetrCommand())
+        FtpCommandRegistry.register("PORT", PortCommand())
+        FtpCommandRegistry.register("PASV", PasvCommand())
     }
 
     override fun handle(clientSocket: Socket) {

@@ -168,4 +168,46 @@ class FtpHandlerTest {
 
         unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
     }
+
+    @Test
+    fun `should register RETR command on init`() {
+        mockkObject(FtpCommandRegistry) // Mock the singleton object
+
+        // Ensure the register method is called with expected arguments
+        every { FtpCommandRegistry.register("RETR", any<RetrCommand>()) } just Runs
+
+        handler.init()
+
+        verify(exactly = 1) { FtpCommandRegistry.register("RETR", any<RetrCommand>()) }
+
+        unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
+    }
+
+    @Test
+    fun `should register PORT command on init`() {
+        mockkObject(FtpCommandRegistry) // Mock the singleton object
+
+        // Ensure the register method is called with expected arguments
+        every { FtpCommandRegistry.register("PORT", any<PortCommand>()) } just Runs
+
+        handler.init()
+
+        verify(exactly = 1) { FtpCommandRegistry.register("PORT", any<PortCommand>()) }
+
+        unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
+    }
+
+    @Test
+    fun `should register PASV command on init`() {
+        mockkObject(FtpCommandRegistry) // Mock the singleton object
+
+        // Ensure the register method is called with expected arguments
+        every { FtpCommandRegistry.register("PASV", any<PasvCommand>()) } just Runs
+
+        handler.init()
+
+        verify(exactly = 1) { FtpCommandRegistry.register("PASV", any<PasvCommand>()) }
+
+        unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
+    }
 }
