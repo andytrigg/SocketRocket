@@ -21,13 +21,15 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object SessionManager {
     enum class TransferType { ASCII, BINARY }
+    enum class TransferMode { STREAM, BLOCK, COMPRESSED }
 
     private val sessions = ConcurrentHashMap<Socket, Session>()
 
     data class Session(
         var username: String? = null,
         var isAuthenticated: Boolean = false,
-        var transferType: TransferType = TransferType.ASCII
+        var transferType: TransferType = TransferType.ASCII,
+        var transferMode: TransferMode = TransferMode.STREAM
     )
 
     fun setUser(socket: Socket, username: String) {
@@ -51,6 +53,14 @@ object SessionManager {
     }
 
     fun getTransferType(socket: Socket): TransferType = sessions[socket]?.transferType ?: TransferType.ASCII
+
+    fun setTransferMode(socket: Socket, mode: TransferMode) {
+        sessions.compute(socket) { _, session ->
+            (session ?: Session()).apply { transferMode = mode }
+        }
+    }
+
+    fun getTransferMode(socket: Socket): TransferMode = sessions[socket]?.transferMode ?: TransferMode.STREAM
 
     fun clearSession(socket: Socket) {
         sessions.remove(socket)

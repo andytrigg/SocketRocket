@@ -54,6 +54,11 @@ class SessionManagerTest {
   }
 
   @Test
+  fun `getTransferMode should return STREAM for unknown socket`() {
+    assertEquals(SessionManager.getTransferMode(mockSocket), SessionManager.TransferMode.STREAM)
+  }
+
+  @Test
   fun `isAuthenticated should return false for new session`() {
     SessionManager.setUser(mockSocket, "testuser")
     assertFalse(SessionManager.isAuthenticated(mockSocket))
@@ -63,6 +68,12 @@ class SessionManagerTest {
   fun `getTransferType should return ASCII for new session`() {
     SessionManager.setUser(mockSocket, "testuser")
     assertEquals(SessionManager.getTransferType(mockSocket), SessionManager.TransferType.ASCII)
+  }
+
+  @Test
+  fun `getTransferMode should return STREAM for new session`() {
+    SessionManager.setUser(mockSocket, "testuser")
+    assertEquals(SessionManager.getTransferMode(mockSocket), SessionManager.TransferMode.STREAM)
   }
 
   @Test
@@ -78,16 +89,23 @@ class SessionManagerTest {
     assertEquals(SessionManager.getTransferType(mockSocket), SessionManager.TransferType.BINARY)
   }
 
+  @Test
+  fun `setTransferMode should allow transfer mode to be changed for any session`() {
+    SessionManager.setTransferMode(mockSocket, SessionManager.TransferMode.COMPRESSED)
+    assertEquals(SessionManager.getTransferMode(mockSocket), SessionManager.TransferMode.COMPRESSED)
+  }
 
   @Test
   fun `clearSession should remove session data`() {
     SessionManager.setUser(mockSocket, "testuser")
     SessionManager.authenticate(mockSocket)
     SessionManager.setTransferType(mockSocket, SessionManager.TransferType.BINARY)
+    SessionManager.setTransferMode(mockSocket, SessionManager.TransferMode.COMPRESSED)
     SessionManager.clearSession(mockSocket)
 
     assertNull(SessionManager.getUser(mockSocket))
     assertFalse(SessionManager.isAuthenticated(mockSocket))
     assertEquals(SessionManager.getTransferType(mockSocket), SessionManager.TransferType.ASCII)
+    assertEquals(SessionManager.getTransferMode(mockSocket), SessionManager.TransferMode.STREAM)
   }
 }
