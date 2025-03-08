@@ -219,6 +219,20 @@ class FtpServerIntegrationTest {
     }
 
     @Test
+    fun `test STRU command changes file structure`() {
+        val socket = Socket("127.0.0.1", serverPort)
+        val output = PrintWriter(socket.getOutputStream(), true)
+        val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+
+        output.println("STRU F")
+        output.flush()
+
+        val response = input.readLine()
+
+        assertEquals("200 File structure set to F.", response)
+    }
+
+    @Test
     fun `test multiple clients can connect and receive responses`() {
         val clients = mutableListOf<Thread>()
 

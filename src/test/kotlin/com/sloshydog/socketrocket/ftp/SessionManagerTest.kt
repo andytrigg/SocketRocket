@@ -59,6 +59,11 @@ class SessionManagerTest {
   }
 
   @Test
+  fun `getFileStructure should return FILE for unknown socket`() {
+    assertEquals(SessionManager.getFileStructure(mockSocket), SessionManager.FileStructure.FILE)
+  }
+
+  @Test
   fun `isAuthenticated should return false for new session`() {
     SessionManager.setUser(mockSocket, "testuser")
     assertFalse(SessionManager.isAuthenticated(mockSocket))
@@ -74,6 +79,12 @@ class SessionManagerTest {
   fun `getTransferMode should return STREAM for new session`() {
     SessionManager.setUser(mockSocket, "testuser")
     assertEquals(SessionManager.getTransferMode(mockSocket), SessionManager.TransferMode.STREAM)
+  }
+
+  @Test
+  fun `getFileStructure should return FILE for new session`() {
+    SessionManager.setUser(mockSocket, "testuser")
+    assertEquals(SessionManager.getFileStructure(mockSocket), SessionManager.FileStructure.FILE)
   }
 
   @Test
@@ -96,16 +107,25 @@ class SessionManagerTest {
   }
 
   @Test
+  fun `setFileStructure should allow File Structure to be changed for any session`() {
+    SessionManager.setFileStructure(mockSocket, SessionManager.FileStructure.RECORD)
+    assertEquals(SessionManager.getFileStructure(mockSocket), SessionManager.FileStructure.RECORD)
+  }
+
+  @Test
   fun `clearSession should remove session data`() {
     SessionManager.setUser(mockSocket, "testuser")
     SessionManager.authenticate(mockSocket)
     SessionManager.setTransferType(mockSocket, SessionManager.TransferType.BINARY)
     SessionManager.setTransferMode(mockSocket, SessionManager.TransferMode.COMPRESSED)
+    SessionManager.setFileStructure(mockSocket, SessionManager.FileStructure.RECORD)
+
     SessionManager.clearSession(mockSocket)
 
     assertNull(SessionManager.getUser(mockSocket))
     assertFalse(SessionManager.isAuthenticated(mockSocket))
     assertEquals(SessionManager.getTransferType(mockSocket), SessionManager.TransferType.ASCII)
     assertEquals(SessionManager.getTransferMode(mockSocket), SessionManager.TransferMode.STREAM)
+    assertEquals(SessionManager.getFileStructure(mockSocket), SessionManager.FileStructure.FILE)
   }
 }

@@ -31,6 +31,7 @@ class FtpHandler(private val identityManager: IdentityManager) : TcpHandler {
         FtpCommandRegistry.register("NOOP", NoopCommand())
         FtpCommandRegistry.register("TYPE", TypeCommand())
         FtpCommandRegistry.register("MODE", ModeCommand())
+        FtpCommandRegistry.register("STRU", StruCommand())
     }
 
     override fun handle(clientSocket: Socket) {

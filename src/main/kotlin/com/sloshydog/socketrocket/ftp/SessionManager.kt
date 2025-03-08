@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
 object SessionManager {
     enum class TransferType { ASCII, BINARY }
     enum class TransferMode { STREAM, BLOCK, COMPRESSED }
+    enum class FileStructure { FILE, RECORD, PAGE }
 
     private val sessions = ConcurrentHashMap<Socket, Session>()
 
@@ -29,7 +30,8 @@ object SessionManager {
         var username: String? = null,
         var isAuthenticated: Boolean = false,
         var transferType: TransferType = TransferType.ASCII,
-        var transferMode: TransferMode = TransferMode.STREAM
+        var transferMode: TransferMode = TransferMode.STREAM,
+        var fileStructure: FileStructure = FileStructure.FILE
     )
 
     fun setUser(socket: Socket, username: String) {
@@ -61,6 +63,14 @@ object SessionManager {
     }
 
     fun getTransferMode(socket: Socket): TransferMode = sessions[socket]?.transferMode ?: TransferMode.STREAM
+
+    fun setFileStructure(socket: Socket, structure: FileStructure) {
+        sessions.compute(socket) { _, session ->
+            (session ?: Session()).apply { fileStructure = structure }
+        }
+    }
+
+    fun getFileStructure(socket: Socket): FileStructure = sessions[socket]?.fileStructure ?: FileStructure.FILE
 
     fun clearSession(socket: Socket) {
         sessions.remove(socket)
