@@ -1,11 +1,10 @@
 package com.sloshydog.socketrocket
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Logger
 
 /**
@@ -27,6 +26,10 @@ class TcpServer(private val handler: TcpHandler, val port: Int) {
     private val logger = Logger.getLogger(TcpServer::class.java.name)
     private val running = AtomicBoolean(true)
     private lateinit var serverSocket: ServerSocket
+
+    private val clientCount = AtomicInteger(0)
+    // TODO Consider CoroutineScope to manage coroutines cleanly.
+//    private val serverScope = CoroutineScope(Dispatchers.IO + SupervisorJob()) // Coroutine Scope
 
     fun start() {
         serverSocket = ServerSocket(port)
@@ -54,7 +57,8 @@ class TcpServer(private val handler: TcpHandler, val port: Int) {
 
     private fun handleClient(clientSocket: Socket) {
         clientSocket.use { socket ->
-            logger.info("👤 New client connected to ${handler.name()}: ${socket.inetAddress}")
+            val clientId = clientCount.incrementAndGet()
+            logger.info("👤 New client #$clientId connected to ${handler.name()}: ${socket.inetAddress}")
             handler.init()
             try {
                 while (true) {
@@ -63,6 +67,7 @@ class TcpServer(private val handler: TcpHandler, val port: Int) {
             } catch (e: Exception) {
                 logger.warning("⚠️ Error with client ${socket.inetAddress}: ${e.message}")
             } finally {
+                clientCount.decrementAndGet()
                 logger.info("❌ Client ${socket.inetAddress} disconnected")
             }
         }
