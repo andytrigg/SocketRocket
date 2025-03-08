@@ -155,6 +155,28 @@ class FtpServerIntegrationTest {
     }
 
     @Test
+    fun `test QUIT command closes current socket connection`() {
+        val socket = Socket("127.0.0.1", serverPort)
+        val output = PrintWriter(socket.getOutputStream(), true)
+        val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+
+        output.println("USER testuser")
+        output.flush()
+        input.readLine()
+
+        output.println("PASS password123")
+        output.flush()
+        input.readLine()
+        // Authenticated user session now exists
+
+        output.println("QUIT")
+        output.flush()
+        val response = input.readLine()
+
+        assertEquals("221 Goodbye.", response)
+    }
+
+    @Test
     fun `test multiple clients can connect and receive responses`() {
         val clients = mutableListOf<Thread>()
 

@@ -1,9 +1,6 @@
 package com.sloshydog.socketrocket.ftp
 
-import com.sloshydog.socketrocket.ftp.command.FtpCommand
-import com.sloshydog.socketrocket.ftp.command.FtpCommandRegistry
-import com.sloshydog.socketrocket.ftp.command.PassCommand
-import com.sloshydog.socketrocket.ftp.command.UserCommand
+import com.sloshydog.socketrocket.ftp.command.*
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -112,6 +109,20 @@ class FtpHandlerTest {
         handler.init()
 
         verify(exactly = 1) { FtpCommandRegistry.register("PASS", any<PassCommand>()) }
+
+        unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
+    }
+
+    @Test
+    fun `should register QUIT command on init`() {
+        mockkObject(FtpCommandRegistry) // Mock the singleton object
+
+        // Ensure the register method is called with expected arguments
+        every { FtpCommandRegistry.register("QUIT", any<QuitCommand>()) } just Runs
+
+        handler.init()
+
+        verify(exactly = 1) { FtpCommandRegistry.register("QUIT", any<QuitCommand>()) }
 
         unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
     }
