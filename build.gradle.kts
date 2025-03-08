@@ -1,5 +1,17 @@
 plugins {
-    kotlin("jvm") version "2.0.21"
+    kotlin("jvm") version "1.9.22"
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21)) // Set to 21 (or 17 if needed)
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+    }
 }
 
 group = "com.sloshydog"
@@ -11,7 +23,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation("io.mockk:mockk:1.13.9")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("at.favre.lib:bcrypt:0.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
