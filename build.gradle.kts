@@ -1,4 +1,5 @@
 plugins {
+    application
     kotlin("jvm") version "1.9.22"
 }
 
@@ -8,6 +9,9 @@ java {
     }
 }
 
+application {
+    mainClass.set("com.sloshydog.socketrocket.MainKt")
+}
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
@@ -33,3 +37,5 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+

@@ -29,7 +29,7 @@
 
 <!-- PROJECT LOGO -->
 <br />
-<div align="center">
+<div >
   <a href="https://github.com/andytrigg/SocketRocket">
     <img src="images/logo.webp" alt="Logo" width="240" height="240">
   </a>
@@ -96,7 +96,7 @@ Here's a blank template to get started. To avoid retyping too much info, do a se
 * [![Kotlin][Kotlin]][Kotlin-url]
 * [![Gradle][Gradle]][Gradle-url]
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p >(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -120,6 +120,16 @@ This is a list of things you need to use the software and how to install them.
    ```sh
    ./gradlew test
    ```
+
+5. To run the TCP server via gradle you have two options
+   1. Echo mode (default port 7878): 
+      ```sh
+       ./gradlew run --args="echo"
+      ```
+   2. Ftp mode (default port 21):
+      ```sh
+       ./gradlew run --args="ftp"
+      ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

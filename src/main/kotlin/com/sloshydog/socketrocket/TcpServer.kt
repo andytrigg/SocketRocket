@@ -1,12 +1,8 @@
 package com.sloshydog.socketrocket
 
-import com.sloshydog.socketrocket.echo.EchoTcpHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.atomic.AtomicBoolean
@@ -27,7 +23,7 @@ import java.util.logging.Logger
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class TcpServer(private val port: Int) {
+class TcpServer(private val handler: TcpHandler, val port: Int) {
     private val logger = Logger.getLogger(TcpServer::class.java.name)
     private val running = AtomicBoolean(true)
     private lateinit var serverSocket: ServerSocket
@@ -57,13 +53,12 @@ class TcpServer(private val port: Int) {
     }
 
     private fun handleClient(clientSocket: Socket) {
-        val handler = EchoTcpHandler()
         clientSocket.use { socket ->
             logger.info("👤 New client connected to ${handler.name()}: ${socket.inetAddress}")
-
+            handler.init()
             try {
                 while (true) {
-                    handler.handle(socket);
+                    handler.handle(socket)
                 }
             } catch (e: Exception) {
                 logger.warning("⚠️ Error with client ${socket.inetAddress}: ${e.message}")

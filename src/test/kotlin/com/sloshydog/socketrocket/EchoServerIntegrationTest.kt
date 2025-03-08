@@ -1,5 +1,6 @@
 package com.sloshydog.socketrocket
 
+import com.sloshydog.socketrocket.echo.EchoTcpHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,13 +28,13 @@ import kotlin.test.assertEquals
  * limitations under the License.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TcpServerTest {
+class EchoServerIntegrationTest {
     private lateinit var server: TcpServer
     private val serverPort = 12345
 
     @BeforeAll
     fun startServer() {
-        server = TcpServer(serverPort)
+        server = TcpServer(EchoTcpHandler(), serverPort)
         CoroutineScope(Dispatchers.IO).launch {
             server.start()
         }
