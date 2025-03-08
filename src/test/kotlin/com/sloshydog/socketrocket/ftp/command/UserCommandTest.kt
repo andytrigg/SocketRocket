@@ -42,7 +42,7 @@ class UserCommandTest {
         command.handle(mockSocket, emptyList())
 
         val response = outputStream.toString().trim()
-        assertEquals("501 Syntax error in parameters", response)
+        assertEquals("501 Syntax error in parameters.", response)
     }
 
     @Test
@@ -54,7 +54,7 @@ class UserCommandTest {
         command.handle(mockSocket, listOf(username))
 
         val response = outputStream.toString().trim()
-        assertEquals("331 User $username OK, need password", response)
+        assertEquals("331 User $username OK, need password.", response)
 
         verify { SessionManager.setUser(mockSocket, username) }
     }
