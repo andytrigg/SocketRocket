@@ -34,7 +34,7 @@ class FtpHandlerTest {
 
     @BeforeEach
     fun setup() {
-        handler = FtpHandler(mockk(relaxed = true))
+        handler = FtpHandler(mockk(relaxed = true), mockk(relaxed = true))
         mockSocket = mockk(relaxed = true)
         mockCommandHandler = mockk(relaxed = true)
 

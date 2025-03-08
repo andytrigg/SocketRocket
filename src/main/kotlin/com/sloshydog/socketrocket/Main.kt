@@ -20,10 +20,12 @@ package com.sloshydog.socketrocket
 import com.sloshydog.socketrocket.echo.EchoTcpHandler
 import com.sloshydog.socketrocket.ftp.FtpHandler
 import com.sloshydog.socketrocket.ftp.InMemoryIdentityManager
+import com.sloshydog.socketrocket.ftp.io.LocalFileSystemProvider
 import kotlinx.cli.*
+import java.io.File
 
 fun main(args: Array<String>) {
-    val parser = ArgParser("example")
+    val parser = ArgParser("socketrocket")
 
     class Echo : Subcommand("echo", "Echo TCP Server") {
         val port by option(ArgType.Int, shortName = "p", description = "Port Number", fullName = "port").default(7878)
@@ -35,9 +37,16 @@ fun main(args: Array<String>) {
 
     class Ftp : Subcommand("ftp", "FTP Server") {
         val port by option(ArgType.Int, shortName = "p", description = "Port Number", fullName = "port").default(21)
+        val rootDirPath by option(ArgType.String, shortName = "d", description = "Root directory for FTP server", fullName = "directory")
+            .default(".")
 
         override fun execute() {
-            executeServer(FtpHandler(InMemoryIdentityManager), port)
+            val rootDir = File(rootDirPath)
+            if (!rootDir.exists() || !rootDir.isDirectory) {
+                println("Error: The specified root directory does not exist or is not a directory: ${rootDir.absolutePath}")
+                return
+            }
+            executeServer(FtpHandler(LocalFileSystemProvider(rootDir), InMemoryIdentityManager), port)
         }
     }
 

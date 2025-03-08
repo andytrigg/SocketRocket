@@ -1,7 +1,7 @@
-package com.sloshydog.socketrocket.ftp.command
+package com.sloshydog.socketrocket.ftp.io
 
-import com.sloshydog.socketrocket.ftp.io.FileSystemProvider
-import java.net.Socket
+import java.io.InputStream
+import java.io.OutputStream
 
 
 /**
@@ -19,9 +19,12 @@ import java.net.Socket
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-class RetrCommand(fileSystem: FileSystemProvider) : FtpCommand {
-
-    override fun handle(client: Socket, args: List<String>) {
-    }
+// TODO Flexibility → Easier to swap out for cloud storage or virtual filesystems later.
+interface FileSystemProvider {
+    fun listFiles(directory: String): List<String>
+    fun fileExists(path: String): Boolean
+    fun getFileSize(path: String): Long
+    fun openFileForRead(path: String): InputStream?
+    fun openFileForWrite(path: String): OutputStream?
+    fun deleteFile(path: String): Boolean
 }

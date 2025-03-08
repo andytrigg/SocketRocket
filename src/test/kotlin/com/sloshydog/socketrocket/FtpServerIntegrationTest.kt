@@ -2,6 +2,8 @@ package com.sloshydog.socketrocket
 
 import com.sloshydog.socketrocket.ftp.FtpHandler
 import com.sloshydog.socketrocket.ftp.InMemoryIdentityManager
+import com.sloshydog.socketrocket.ftp.io.FileSystemProvider
+import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,10 +34,12 @@ import kotlin.test.assertEquals
 class FtpServerIntegrationTest {
     private lateinit var server: TcpServer
     private val serverPort = 12345
+    private lateinit var mockFileStsyemProvider: FileSystemProvider
 
     @BeforeAll
     fun startServer() {
-        server = TcpServer(FtpHandler(InMemoryIdentityManager), serverPort)
+        mockFileStsyemProvider = mockk(relaxed = true)
+        server = TcpServer(FtpHandler(mockFileStsyemProvider, InMemoryIdentityManager), serverPort)
         CoroutineScope(Dispatchers.IO).launch {
             server.start()
         }

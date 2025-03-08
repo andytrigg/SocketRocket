@@ -2,12 +2,13 @@ package com.sloshydog.socketrocket.ftp
 
 import com.sloshydog.socketrocket.TcpHandler
 import com.sloshydog.socketrocket.ftp.command.*
+import com.sloshydog.socketrocket.ftp.io.FileSystemProvider
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.Socket
 
 // RFC 959
-class FtpHandler(private val identityManager: IdentityManager) : TcpHandler {
+class FtpHandler(private val fileSystem: FileSystemProvider, private val identityManager: IdentityManager) : TcpHandler {
     companion object {
         const val COMMAND_OKAY = 200
         const val SERVICE_CLOSING_CONTROL_CONNECTION = 221
@@ -32,7 +33,7 @@ class FtpHandler(private val identityManager: IdentityManager) : TcpHandler {
         FtpCommandRegistry.register("TYPE", TypeCommand())
         FtpCommandRegistry.register("MODE", ModeCommand())
         FtpCommandRegistry.register("STRU", StruCommand())
-        FtpCommandRegistry.register("RETR", RetrCommand())
+        FtpCommandRegistry.register("RETR", RetrCommand(fileSystem))
         FtpCommandRegistry.register("PORT", PortCommand())
         FtpCommandRegistry.register("PASV", PasvCommand())
     }
