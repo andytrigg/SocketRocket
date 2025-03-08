@@ -204,6 +204,19 @@ class FtpServerIntegrationTest {
         assertEquals("200 Switching to Binary mode.", response)
     }
 
+    @Test
+    fun `test MODE command changes transfer type`() {
+        val socket = Socket("127.0.0.1", serverPort)
+        val output = PrintWriter(socket.getOutputStream(), true)
+        val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+
+        output.println("MODE B")
+        output.flush()
+
+        val response = input.readLine()
+
+        assertEquals("200 Mode set to Block.", response)
+    }
 
     @Test
     fun `test multiple clients can connect and receive responses`() {

@@ -1,6 +1,5 @@
 package com.sloshydog.socketrocket.ftp.command
 
-import com.sloshydog.socketrocket.ftp.FtpHandler
 import com.sloshydog.socketrocket.ftp.SessionManager
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.*
@@ -45,7 +44,7 @@ class TypeCommandTest {
         typeCommand.handle(mockSocket, emptyList())
 
         val response = outputStream.toString().trim()
-        assertEquals("${FtpHandler.SYNTAX_ERROR} Syntax error in parameters.", response)
+        assertEquals("501 Syntax error in parameters.", response)
     }
 
     @Test
@@ -55,7 +54,7 @@ class TypeCommandTest {
         typeCommand.handle(mockSocket, listOf("A"))
 
         val response = outputStream.toString().trim()
-        assertEquals("${FtpHandler.COMMAND_OKAY} Switching to ASCII mode.", response)
+        assertEquals("200 Switching to ASCII mode.", response)
 
         verify { SessionManager.setTransferType(mockSocket, SessionManager.TransferType.ASCII) }
     }
@@ -67,7 +66,7 @@ class TypeCommandTest {
         typeCommand.handle(mockSocket, listOf("I"))
 
         val response = outputStream.toString().trim()
-        assertEquals("${FtpHandler.COMMAND_OKAY} Switching to Binary mode.", response)
+        assertEquals("200 Switching to Binary mode.", response)
 
         verify { SessionManager.setTransferType(mockSocket, SessionManager.TransferType.BINARY) }
     }
@@ -78,7 +77,7 @@ class TypeCommandTest {
 
         val response = outputStream.toString().trim()
         assertEquals(
-            "${FtpHandler.COMMAND_NOT_IMPLEMENTED_FOR_THAT_PARAMETER} Command not implemented for that parameter.",
+            "504 Command not implemented for that parameter.",
             response
         )
 
