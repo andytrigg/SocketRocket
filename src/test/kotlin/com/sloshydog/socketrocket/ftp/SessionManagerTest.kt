@@ -49,9 +49,20 @@ class SessionManagerTest {
   }
 
   @Test
+  fun `getTransferType should return ASCII for unknown socket`() {
+    assertEquals(SessionManager.getTransferType(mockSocket), SessionManager.TransferType.ASCII)
+  }
+
+  @Test
   fun `isAuthenticated should return false for new session`() {
     SessionManager.setUser(mockSocket, "testuser")
     assertFalse(SessionManager.isAuthenticated(mockSocket))
+  }
+
+  @Test
+  fun `getTransferType should return ASCII for new session`() {
+    SessionManager.setUser(mockSocket, "testuser")
+    assertEquals(SessionManager.getTransferType(mockSocket), SessionManager.TransferType.ASCII)
   }
 
   @Test
@@ -62,12 +73,21 @@ class SessionManagerTest {
   }
 
   @Test
+  fun `setTransferType should allow transfer type to be changed for any session`() {
+    SessionManager.setTransferType(mockSocket, SessionManager.TransferType.BINARY)
+    assertEquals(SessionManager.getTransferType(mockSocket), SessionManager.TransferType.BINARY)
+  }
+
+
+  @Test
   fun `clearSession should remove session data`() {
     SessionManager.setUser(mockSocket, "testuser")
     SessionManager.authenticate(mockSocket)
+    SessionManager.setTransferType(mockSocket, SessionManager.TransferType.BINARY)
     SessionManager.clearSession(mockSocket)
 
     assertNull(SessionManager.getUser(mockSocket))
     assertFalse(SessionManager.isAuthenticated(mockSocket))
+    assertEquals(SessionManager.getTransferType(mockSocket), SessionManager.TransferType.ASCII)
   }
 }

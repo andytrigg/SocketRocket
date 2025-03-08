@@ -20,28 +20,37 @@ import java.util.concurrent.ConcurrentHashMap
  * limitations under the License.
  */
 object SessionManager {
+    enum class TransferType { ASCII, BINARY }
+
     private val sessions = ConcurrentHashMap<Socket, Session>()
 
     data class Session(
         var username: String? = null,
-        var isAuthenticated: Boolean = false
+        var isAuthenticated: Boolean = false,
+        var transferType: TransferType = TransferType.ASCII
     )
 
     fun setUser(socket: Socket, username: String) {
-        sessions[socket] = Session(username, isAuthenticated = false)
+        sessions.compute(socket) { _, _ -> Session(username = username) }
     }
 
     fun authenticate(socket: Socket) {
-        sessions[socket]?.isAuthenticated = true
+        sessions.computeIfPresent(socket) { _, session ->
+            session.apply { isAuthenticated = true }
+        }
     }
 
-    fun getUser(socket: Socket): String? {
-        return sessions[socket]?.username
+    fun getUser(socket: Socket): String? = sessions[socket]?.username
+
+    fun isAuthenticated(socket: Socket): Boolean = sessions.getOrDefault(socket, Session()).isAuthenticated
+
+    fun setTransferType(socket: Socket, type: TransferType) {
+        sessions.compute(socket) { _, session ->
+            (session ?: Session()).apply { transferType = type }
+        }
     }
 
-    fun isAuthenticated(socket: Socket): Boolean {
-        return sessions[socket]?.isAuthenticated == true
-    }
+    fun getTransferType(socket: Socket): TransferType = sessions[socket]?.transferType ?: TransferType.ASCII
 
     fun clearSession(socket: Socket) {
         sessions.remove(socket)
