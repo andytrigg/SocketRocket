@@ -35,12 +35,12 @@ class UserCommand : FtpCommand {
     override fun handle(client: Socket, args: List<String>) {
         val outputStream = client.getOutputStream()
         if (args.isEmpty()) {
-            outputStream.write("${FtpHandler.SYNTAX_ERROR} Syntax error in parameters\r\n".toByteArray())
+            outputStream.write("${FtpHandler.SYNTAX_ERROR} Syntax error in parameters.\r\n".toByteArray())
             return
         }
         val username = args[0]
         SessionManager.setUser(client, username)
         outputStream
-            .write("${FtpHandler.USER_NAME_OKAY_NEED_PASSWORD} User $username OK, need password\r\n".toByteArray())
+            .write("${FtpHandler.USER_NAME_OKAY_NEED_PASSWORD} User $username OK, need password.\r\n".toByteArray())
     }
 }
