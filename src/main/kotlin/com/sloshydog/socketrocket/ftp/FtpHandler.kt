@@ -7,7 +7,7 @@ import java.io.InputStreamReader
 import java.net.Socket
 
 // RFC 959
-class FtpHandler(val identityManager: IdentityManager) : TcpHandler {
+class FtpHandler(private val identityManager: IdentityManager) : TcpHandler {
     companion object {
         const val COMMAND_OKAY = 200
         const val SERVICE_CLOSING_CONTROL_CONNECTION = 221
@@ -16,6 +16,7 @@ class FtpHandler(val identityManager: IdentityManager) : TcpHandler {
         const val SYNTAX_ERROR = 501
         const val COMMAND_NOT_IMPLEMENTED = 502
         const val BAD_SEQUENCE_OF_COMMANDS = 503
+        const val COMMAND_NOT_IMPLEMENTED_FOR_THAT_PARAMETER = 504
         const val NOT_LOGGED_IN = 530
     }
 
@@ -28,6 +29,7 @@ class FtpHandler(val identityManager: IdentityManager) : TcpHandler {
         FtpCommandRegistry.register("PASS", PassCommand(identityManager))
         FtpCommandRegistry.register("QUIT", QuitCommand())
         FtpCommandRegistry.register("NOOP", NoopCommand())
+        FtpCommandRegistry.register("TYPE", TypeCommand())
     }
 
     override fun handle(clientSocket: Socket) {
@@ -43,7 +45,7 @@ class FtpHandler(val identityManager: IdentityManager) : TcpHandler {
         if (handler != null) {
             handler.handle(clientSocket, args)
         } else {
-            clientSocket.getOutputStream().write("${COMMAND_NOT_IMPLEMENTED} Command not implemented\r\n".toByteArray())
+            clientSocket.getOutputStream().write("$COMMAND_NOT_IMPLEMENTED Command not implemented\r\n".toByteArray())
         }
     }
 }

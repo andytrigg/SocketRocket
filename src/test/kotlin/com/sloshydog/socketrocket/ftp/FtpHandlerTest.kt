@@ -140,4 +140,18 @@ class FtpHandlerTest {
 
         unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
     }
+
+    @Test
+    fun `should register TYPE command on init`() {
+        mockkObject(FtpCommandRegistry) // Mock the singleton object
+
+        // Ensure the register method is called with expected arguments
+        every { FtpCommandRegistry.register("TYPE", any<TypeCommand>()) } just Runs
+
+        handler.init()
+
+        verify(exactly = 1) { FtpCommandRegistry.register("TYPE", any<TypeCommand>()) }
+
+        unmockkObject(FtpCommandRegistry) // Cleanup mock to avoid affecting other tests
+    }
 }
