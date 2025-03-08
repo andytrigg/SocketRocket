@@ -29,9 +29,9 @@
 
 <!-- PROJECT LOGO -->
 <br />
-<div >
+<div align="center">
   <a href="https://github.com/andytrigg/SocketRocket">
-    <img src="images/logo.webp" alt="Logo" width="240" height="240">
+    <img src="images/logo.webp" alt="Logo" width="400" height="400">
   </a>
 
 <h3 align="center">SocketRocket</h3>
@@ -96,7 +96,7 @@ Here's a blank template to get started. To avoid retyping too much info, do a se
 * [![Kotlin][Kotlin]][Kotlin-url]
 * [![Gradle][Gradle]][Gradle-url]
 
-<p >(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -196,7 +196,7 @@ Distributed under the project_license. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - andy@sloshydog.com
+Your Name - [@twitter_handle](https://twitter.com/gigantiqandy) - andy@sloshydog.com
 
 Project Link: [https://github.com/andytrigg/SocketRocket](https://github.com/andytrigg/SocketRocket)
 
