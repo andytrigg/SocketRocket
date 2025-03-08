@@ -1,10 +1,7 @@
 package com.sloshydog.socketrocket.ftp
 
 import com.sloshydog.socketrocket.TcpHandler
-import com.sloshydog.socketrocket.ftp.command.FtpCommandRegistry
-import com.sloshydog.socketrocket.ftp.command.PassCommand
-import com.sloshydog.socketrocket.ftp.command.QuitCommand
-import com.sloshydog.socketrocket.ftp.command.UserCommand
+import com.sloshydog.socketrocket.ftp.command.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.Socket
@@ -12,6 +9,7 @@ import java.net.Socket
 // RFC 959
 class FtpHandler(val identityManager: IdentityManager) : TcpHandler {
     companion object {
+        const val COMMAND_OKAY = 200
         const val SERVICE_CLOSING_CONTROL_CONNECTION = 221
         const val USER_LOGGED_IN_PROCEED = 230
         const val USER_NAME_OKAY_NEED_PASSWORD = 331
@@ -29,6 +27,7 @@ class FtpHandler(val identityManager: IdentityManager) : TcpHandler {
         FtpCommandRegistry.register("USER", UserCommand())
         FtpCommandRegistry.register("PASS", PassCommand(identityManager))
         FtpCommandRegistry.register("QUIT", QuitCommand())
+        FtpCommandRegistry.register("NOOP", NoopCommand())
     }
 
     override fun handle(clientSocket: Socket) {

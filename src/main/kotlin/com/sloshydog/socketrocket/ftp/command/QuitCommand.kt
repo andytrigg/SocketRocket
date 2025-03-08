@@ -1,5 +1,6 @@
 package com.sloshydog.socketrocket.ftp.command
 
+import com.sloshydog.socketrocket.ftp.FtpHandler
 import com.sloshydog.socketrocket.ftp.SessionManager
 import java.net.Socket
 
@@ -10,7 +11,7 @@ import java.net.Socket
  */
 class QuitCommand : FtpCommand {
     override fun handle(client: Socket, args: List<String>) {
-        client.getOutputStream().write("221 Goodbye.\r\n".toByteArray())
+        client.getOutputStream().write("${FtpHandler.SERVICE_CLOSING_CONTROL_CONNECTION} Goodbye.\r\n".toByteArray())
         SessionManager.clearSession(client)
         client.close()
     }

@@ -177,6 +177,20 @@ class FtpServerIntegrationTest {
     }
 
     @Test
+    fun `test NOOP command returns 200`() {
+        val socket = Socket("127.0.0.1", serverPort)
+        val output = PrintWriter(socket.getOutputStream(), true)
+        val input = BufferedReader(InputStreamReader(socket.getInputStream()))
+
+        output.println("NOOP")
+        output.flush()
+
+        val response = input.readLine()
+
+        assertEquals("200 I successfully did nothing.", response)
+    }
+
+    @Test
     fun `test multiple clients can connect and receive responses`() {
         val clients = mutableListOf<Thread>()
 
