@@ -12,6 +12,7 @@ class FtpHandler(private val fileSystem: FileSystemProvider, private val identit
     companion object {
         const val COMMAND_OKAY = 200
         const val SERVICE_CLOSING_CONTROL_CONNECTION = 221
+        const val ENTERING_PASSIVE_MODE = 227
         const val USER_LOGGED_IN_PROCEED = 230
         const val USER_NAME_OKAY_NEED_PASSWORD = 331
         const val SYNTAX_ERROR = 501

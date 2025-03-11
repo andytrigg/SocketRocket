@@ -1,5 +1,8 @@
 package com.sloshydog.socketrocket.ftp.command
 
+import com.sloshydog.socketrocket.ftp.FtpHandler
+import com.sloshydog.socketrocket.ftp.SessionManager
+import java.net.ServerSocket
 import java.net.Socket
 
 
@@ -18,9 +21,20 @@ import java.net.Socket
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/**
+ * The PASV (Passive Mode) command in FTP is used by a client to request that the server open a port
+ * for data connections instead of the client opening one.
+ */
 class PasvCommand : FtpCommand {
-
     override fun handle(client: Socket, args: List<String>) {
+        val serverSocket = ServerSocket(0) // 0 = OS assigns a free port
+        val address = client.localAddress.hostAddress
+        val port = serverSocket.localPort
+
+        SessionManager.setPassiveMode(client, serverSocket)
+
+        val p1 = port / 256
+        val p2 = port % 256
+        client.getOutputStream().write("${FtpHandler.ENTERING_PASSIVE_MODE} Entering Passive Mode ($address,$p1,$p2).\r\n".toByteArray())
     }
 }
