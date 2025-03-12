@@ -61,7 +61,7 @@ class PasvCommandTest {
         val response = outputStream.toString().trim()
 
         // Extract port numbers
-        val regex = """\((\d+)\.(\d+)\.(\d+)\.(\d+),(\d+),(\d+)\)""".toRegex()
+        val regex = """\((\d+),(\d+),(\d+),(\d+),(\d+),(\d+)\)""".toRegex()
         val matchResult = regex.find(response)
         assertTrue(matchResult != null, "Response should contain an IP and port numbers in PASV format.")
 

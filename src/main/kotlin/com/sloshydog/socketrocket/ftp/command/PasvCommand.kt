@@ -28,7 +28,7 @@ import java.net.Socket
 class PasvCommand : FtpCommand {
     override fun handle(client: Socket, args: List<String>) {
         val serverSocket = ServerSocket(0) // 0 = OS assigns a free port
-        val address = client.localAddress.hostAddress
+        val address = client.localAddress.hostAddress.replace('.', ',')
         val port = serverSocket.localPort
 
         SessionManager.setPassiveMode(client, serverSocket)

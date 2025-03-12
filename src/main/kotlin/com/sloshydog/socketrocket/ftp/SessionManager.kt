@@ -1,5 +1,7 @@
 package com.sloshydog.socketrocket.ftp
 
+import java.net.InetAddress
+import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.ConcurrentHashMap
 
@@ -23,6 +25,7 @@ object SessionManager {
     enum class TransferType { ASCII, BINARY }
     enum class TransferMode { STREAM, BLOCK, COMPRESSED }
     enum class FileStructure { FILE, RECORD, PAGE }
+    enum class DataConnectionMode { ACTIVE, PASSIVE }
 
     private val sessions = ConcurrentHashMap<Socket, Session>()
 
@@ -74,5 +77,13 @@ object SessionManager {
 
     fun clearSession(socket: Socket) {
         sessions.remove(socket)
+    }
+
+    fun setPassiveMode(client: Socket, serverSocket: ServerSocket) {
+        TODO("Not yet implemented")
+    }
+
+    fun setActiveMode(client: Socket, byName: InetAddress?, port: Int) {
+        TODO("Not yet implemented")
     }
 }
