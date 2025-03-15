@@ -1,11 +1,13 @@
 package com.sloshydog.socketrocket.ftp
 
-import io.mockk.mockk
+import io.mockk.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.net.InetAddress
+import java.net.ServerSocket
 import java.net.Socket
 
 /**
@@ -113,12 +115,72 @@ class SessionManagerTest {
   }
 
   @Test
+  fun `should correctly set Active Mode`() {
+    val address = InetAddress.getByName("192.168.1.5")
+    val port = 1025
+
+    SessionManager.setActiveMode(mockSocket, address, port)
+    val mode = SessionManager.getDataConnectionMode(mockSocket)
+
+    assertTrue(mode is SessionManager.Session.DataConnection.Active)
+    assertEquals(Pair(address, port), (mode as SessionManager.Session.DataConnection.Active).address)
+  }
+
+  @Test
+  fun `should correctly set Passive Mode`() {
+    val serverSocket = mockk<ServerSocket>(relaxed = true) // Mock ServerSocket
+    every { serverSocket.localPort } returns 2121
+    every { serverSocket.close() } just Runs // Ensure it can be closed without errors
+
+    SessionManager.setPassiveMode(mockSocket, serverSocket)
+    val mode = SessionManager.getDataConnectionMode(mockSocket)
+
+    assertTrue(mode is SessionManager.Session.DataConnection.Passive)
+    assertEquals(serverSocket, (mode as SessionManager.Session.DataConnection.Passive).socket)
+  }
+
+  @Test
+  fun `should correctly close socket on session clear when Passive Mode has been set`() {
+    val serverSocket = mockk<ServerSocket>(relaxed = true) // Mock ServerSocket
+    every { serverSocket.localPort } returns 2121
+    every { serverSocket.close() } just Runs // Ensure it can be closed without errors
+
+    SessionManager.setPassiveMode(mockSocket, serverSocket)
+
+    // Verify socket closes on session clear
+    SessionManager.clearSession(mockSocket)
+    verify { serverSocket.close() }
+  }
+
+  @Test
+  fun `should clean up resources when switching from Passive to Active Mode`() {
+    val serverSocket = mockk<ServerSocket>(relaxed = true)
+    every { serverSocket.close() } just Runs
+
+    // Set Passive Mode first
+    SessionManager.setPassiveMode(mockSocket, serverSocket)
+    assertTrue(SessionManager.getDataConnectionMode(mockSocket) is SessionManager.Session.DataConnection.Passive)
+
+    // Now switch to Active Mode
+    val address = InetAddress.getByName("192.168.1.5")
+    val port = 1025
+    SessionManager.setActiveMode(mockSocket, address, port)
+
+    // Verify Passive Mode socket was closed
+    verify { serverSocket.close() }
+  }
+
+  @Test
   fun `clearSession should remove session data`() {
+    val serverSocket = mockk<ServerSocket>(relaxed = true)
+    every { serverSocket.close() } just Runs
+
     SessionManager.setUser(mockSocket, "testuser")
     SessionManager.authenticate(mockSocket)
     SessionManager.setTransferType(mockSocket, SessionManager.TransferType.BINARY)
     SessionManager.setTransferMode(mockSocket, SessionManager.TransferMode.COMPRESSED)
     SessionManager.setFileStructure(mockSocket, SessionManager.FileStructure.RECORD)
+    SessionManager.setPassiveMode(mockSocket, serverSocket)
 
     SessionManager.clearSession(mockSocket)
 
@@ -127,5 +189,8 @@ class SessionManagerTest {
     assertEquals(SessionManager.getTransferType(mockSocket), SessionManager.TransferType.ASCII)
     assertEquals(SessionManager.getTransferMode(mockSocket), SessionManager.TransferMode.STREAM)
     assertEquals(SessionManager.getFileStructure(mockSocket), SessionManager.FileStructure.FILE)
+    assertTrue(SessionManager.getDataConnectionMode(mockSocket) is SessionManager.Session.DataConnection.Active)
+
+    verify { serverSocket.close() }
   }
 }

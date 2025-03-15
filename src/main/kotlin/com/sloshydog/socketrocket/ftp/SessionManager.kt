@@ -1,5 +1,6 @@
 package com.sloshydog.socketrocket.ftp
 
+import com.sloshydog.socketrocket.ftp.SessionManager.Session.DataConnection
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
@@ -34,56 +35,101 @@ object SessionManager {
         var isAuthenticated: Boolean = false,
         var transferType: TransferType = TransferType.ASCII,
         var transferMode: TransferMode = TransferMode.STREAM,
-        var fileStructure: FileStructure = FileStructure.FILE
-    )
+        var fileStructure: FileStructure = FileStructure.FILE,
 
-    fun setUser(socket: Socket, username: String) {
-        sessions.compute(socket) { _, _ -> Session(username = username) }
+        // Default to Active mode but ensure only one connection mode is active at a time
+        private var _dataConnectionMode: DataConnection? = DataConnection.Active(null) // Default is active mode
+    ) {
+        var dataConnectionMode: DataConnection?
+            get() = _dataConnectionMode
+            set(value) {
+                cleanupDataConnection()
+                _dataConnectionMode = value
+            }
+
+        // Ensure that only one connection type is active at a time
+        sealed class DataConnection {
+            data class Active(var address: Pair<InetAddress, Int>?) : DataConnection()
+            data class Passive(var socket: ServerSocket?) : DataConnection()
+        }
+
+        /** Clean up resources when switching modes **/
+        fun cleanupDataConnection() {
+            when (_dataConnectionMode) {
+                is DataConnection.Passive -> {
+                    (dataConnectionMode as? DataConnection.Passive)?.socket?.close()
+                }
+
+                is DataConnection.Active -> {
+                    // No explicit cleanup needed for active mode (it is client-managed)
+                }
+
+                null -> {} // No-op
+            }
+        }
     }
 
-    fun authenticate(socket: Socket) {
-        sessions.computeIfPresent(socket) { _, session ->
+    fun setUser(client: Socket, username: String) {
+        sessions.compute(client) { _, _ -> Session(username = username) }
+    }
+
+    fun authenticate(client: Socket) {
+        sessions.computeIfPresent(client) { _, session ->
             session.apply { isAuthenticated = true }
         }
     }
 
-    fun getUser(socket: Socket): String? = sessions[socket]?.username
+    fun getUser(client: Socket): String? = sessions[client]?.username
 
-    fun isAuthenticated(socket: Socket): Boolean = sessions.getOrDefault(socket, Session()).isAuthenticated
+    fun isAuthenticated(client: Socket): Boolean = sessions.getOrDefault(client, Session()).isAuthenticated
 
-    fun setTransferType(socket: Socket, type: TransferType) {
-        sessions.compute(socket) { _, session ->
+    fun setTransferType(client: Socket, type: TransferType) {
+        sessions.compute(client) { _, session ->
             (session ?: Session()).apply { transferType = type }
         }
     }
 
-    fun getTransferType(socket: Socket): TransferType = sessions[socket]?.transferType ?: TransferType.ASCII
+    fun getTransferType(client: Socket): TransferType = sessions[client]?.transferType ?: TransferType.ASCII
 
-    fun setTransferMode(socket: Socket, mode: TransferMode) {
-        sessions.compute(socket) { _, session ->
+    fun setTransferMode(client: Socket, mode: TransferMode) {
+        sessions.compute(client) { _, session ->
             (session ?: Session()).apply { transferMode = mode }
         }
     }
 
-    fun getTransferMode(socket: Socket): TransferMode = sessions[socket]?.transferMode ?: TransferMode.STREAM
+    fun getTransferMode(client: Socket): TransferMode = sessions[client]?.transferMode ?: TransferMode.STREAM
 
-    fun setFileStructure(socket: Socket, structure: FileStructure) {
-        sessions.compute(socket) { _, session ->
+    fun setFileStructure(client: Socket, structure: FileStructure) {
+        sessions.compute(client) { _, session ->
             (session ?: Session()).apply { fileStructure = structure }
         }
     }
 
-    fun getFileStructure(socket: Socket): FileStructure = sessions[socket]?.fileStructure ?: FileStructure.FILE
+    fun getFileStructure(client: Socket): FileStructure = sessions[client]?.fileStructure ?: FileStructure.FILE
 
-    fun clearSession(socket: Socket) {
-        sessions.remove(socket)
-    }
+    fun getDataConnectionMode(client: Socket): DataConnection =
+        sessions[client]?.dataConnectionMode ?: DataConnection.Active(null)
 
     fun setPassiveMode(client: Socket, serverSocket: ServerSocket) {
-        TODO("Not yet implemented")
+        sessions.compute(client) { _, session ->
+            (session ?: Session()).apply {
+                dataConnectionMode = Session.DataConnection.Passive(serverSocket)
+            }
+        }
     }
 
-    fun setActiveMode(client: Socket, byName: InetAddress?, port: Int) {
-        TODO("Not yet implemented")
+    fun setActiveMode(client: Socket, address: InetAddress, port: Int) {
+        sessions.compute(client) { _, session ->
+            (session ?: Session()).apply {
+                dataConnectionMode = Session.DataConnection.Active(Pair(address, port))
+            }
+        }
+    }
+
+    @Synchronized
+    fun clearSession(client: Socket) {
+        val session = sessions.remove(client) ?: return
+        session.cleanupDataConnection()
     }
 }
+
